@@ -1,0 +1,23 @@
+# data and results folder content:
+202103_crop_production_risk_isimip/results/*
+202103_crop_production_risk_isimip/data/ISIMIP2b/*
+202103_crop_production_risk_isimip/data/ISIMIP2a/*
+202103_crop_production_risk_isimip/data/ISIMIP3b/output/*
+202103_crop_production_risk_isimip/data/ISIMIP3b/input/Hazard/*
+202103_crop_production_risk_isimip/data/ISIMIP3b/input/Exposure/*
+
+# python cache
+202103_crop_production_risk_isimip/ISIMIP2b/__pycache__/
+202103_crop_production_risk_isimip/ISIMIP2a/__pycache__/
+202103_crop_production_risk_isimip/ISIMIP3b/__pycache__/
+202103_crop_production_risk_isimip/ISIMIP3b/__pycache__/*
+202103_crop_production_risk_isimip/ISIMIP2b/.ipynb_checkpoints/
+202103_crop_production_risk_isimip/ISIMIP3b/.ipynb_checkpoints/
+202103_crop_production_risk_isimip/ISIMIP3b/.ipynb_checkpoints/*
+
+
+# mac file binary
+.DS_Store
+202103_crop_production_risk_isimip/.DS_Store
+202103_crop_production_risk_isimip/ISIMIP3b/.DS_Store
+
