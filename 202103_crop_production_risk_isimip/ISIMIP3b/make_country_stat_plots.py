@@ -27,16 +27,16 @@ save_dir = co.plot_dir
 
 # select which plot types to make
 impact_data_plot = 0
-pr_plots_crops = 1 # y : Probability Ratio, x : global warming level (GMT bin)
-pp_plots_crops = 1 # y : Probability, x : GMT bin
+pr_plots_crops = 0 # y : Probability Ratio, x : global warming level (GMT bin)
+pp_plots_crops = 0 # y : Probability, x : GMT bin
 rp_plots_crops = 1 # y : Delta Production, x : Return Period
-cv_plots_crops = 1 # y : Coefficient of variation, x : GMT_bin
+cv_plots_crops = 0 # y : Coefficient of variation, x : GMT_bin
 
 # crop type; can also be list. Default: None --> all 
 crop = None # ['combi-kcal'] # None # ['ric'] # None # ['ric'] # ['whe'] # None
 
 # countries (list); None --> main producers
-countries = None # ['GLB'] # ['CHE'] # None # ['GLB', 'USA', 'CHN']
+countries = None # ['GLB', 'ARG', 'USA'] # None # ['GLB'] # ['CHE'] # None # ['GLB', 'USA', 'CHN']
 
 max_bin = 4.5 # max. GMT bin on x axis
 
@@ -80,30 +80,31 @@ if pp_plots_crops:
                                        ylims=(0, 100), yticks=np.arange(0,110,10))
 
 if rp_plots_crops:
-
+    #frequencies = [1/60, 1/50, 1/40, 1/30, 1/20, 1/10, 1/5, 1/3, 1/2]
+    frequencies = [1/100, 1/80, 1/60, 1/50, 1/40, 1/30, 1/20, 1/10, 1/5, 1/3, 1/2]
     stats_plot.plot_RP_per_bin_country(input_dir=input_dir, countries=countries, crop=crop,
-                                frequencies=None, remove_small_samples=True, log_x=True,
+                                frequencies=frequencies, remove_small_samples=True, log_x=True,
                                 log_y=False, rp=True, gmt_bins=[0.5, 2.0, 4.0],
                                 ggcms=None, deviation_from=None, save_dir=save_dir, save_plot='pdf',
                                 rel2ref=True, plot_ens=True, in_labels=False,
                                 ylims=(-30,30), title_str=title_str)
 
     stats_plot.plot_RP_per_bin_country(input_dir=input_dir, countries=countries, crop=crop,
-                                frequencies=None, remove_small_samples=True, log_x=True,
+                                frequencies=frequencies, remove_small_samples=True, log_x=True,
                                 log_y=False, rp=True, gmt_bins=[0.5, 2.0, 4.0],
                                 ggcms=None, deviation_from=None, save_dir=save_dir, save_plot='pdf',
                                 rel2ref=True, plot_ens=False, in_labels=False,
                                 ylims=(-30,30), title_str=title_str)
 
     stats_plot.plot_RP_per_bin_country(input_dir=input_dir, countries=countries, crop=crop,
-                                frequencies=None, remove_small_samples=True, log_x=True,
+                                frequencies=frequencies, remove_small_samples=True, log_x=True,
                                 log_y=False, rp=True, gmt_bins=[0.5, 2.0, 4.0],
                                 ggcms=None, deviation_from=None, save_dir=save_dir, save_plot='pdf',
                                 rel2ref=False, plot_ens=True, in_labels=False,
                                 ylims=(-25,2.5), title_str=title_str)
 
     stats_plot.plot_RP_per_bin_country(input_dir=input_dir, countries=countries, crop=crop,
-                                frequencies=None, remove_small_samples=True, log_x=True,
+                                frequencies=frequencies, remove_small_samples=True, log_x=True,
                                 log_y=False, rp=True, gmt_bins=[0.5, 2.0, 4.0],
                                 ggcms=None, deviation_from=None, save_dir=save_dir, save_plot='pdf',
                                 rel2ref=False, plot_ens=False, in_labels=False,

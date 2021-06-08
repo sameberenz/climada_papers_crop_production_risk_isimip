@@ -684,7 +684,7 @@ def plot_RP_per_bin_country(input_dir=co.out_dir / 'Stats_countries' / 'overlapp
     for country in countries: # loop over countries
         print(country)
         # loop over crops and ggcms:
-        for i_crop, df in enumerate(crop): # crop
+        for i_crop, cr in enumerate(crop): # crop
             df = stats_df[i_crop]
             if 'combi' in cr:
                 ggcms_loop = ggcms_sel
@@ -692,15 +692,15 @@ def plot_RP_per_bin_country(input_dir=co.out_dir / 'Stats_countries' / 'overlapp
                 ggcms_loop = ggcms
             print(crop[i_crop])
             # init dicts and lists for loop over ggcms:
-            values = list()
+            values = list() # values[i_bin][i_ggcm][i_frequency]
             means = list()
             medians = list()
             min_max = list()
             iqr = list()
             twothirds = list()
+            ggcm_stack = dict()
             for gmt_bin in gmt_bins: # loop over GMT bins
                 values.append(list())
-                ggcm_stack = dict()
                 iggcm = 0
                 in_label_keys = list()
                 for ggcm in ggcms_loop: # ggcm
@@ -744,11 +744,13 @@ def plot_RP_per_bin_country(input_dir=co.out_dir / 'Stats_countries' / 'overlapp
                     else:
                         ggcm_stack[gmt_bin] = np.vstack((ggcm_stack[gmt_bin], np.array(values[-1][-1])))
                     iggcm += 1
-                means.append(np.nanmean(ggcm_stack[gmt_bin], axis=0))
-                medians.append(np.nanmedian(ggcm_stack[gmt_bin], axis=0))
-                min_max.append((np.nanmin(ggcm_stack[gmt_bin], axis=0), np.nanmax(ggcm_stack[gmt_bin], axis=0)))
-                iqr.append((np.nanquantile(ggcm_stack[gmt_bin], .25, axis=0), np.nanquantile(ggcm_stack[gmt_bin], .75, axis=0)))
-                twothirds.append((np.nanquantile(ggcm_stack[gmt_bin], 1/6, axis=0), np.nanquantile(ggcm_stack[gmt_bin], 5/6, axis=0)))
+
+            for gmt_bin in gmt_bins: # loop over GMT bins
+                means.append(np.mean(ggcm_stack[gmt_bin], axis=0))
+                medians.append(np.median(ggcm_stack[gmt_bin], axis=0))
+                min_max.append((np.min(ggcm_stack[gmt_bin], axis=0), np.max(ggcm_stack[gmt_bin], axis=0)))
+                iqr.append((np.quantile(ggcm_stack[gmt_bin], .25, axis=0), np.quantile(ggcm_stack[gmt_bin], .75, axis=0)))
+                twothirds.append((np.quantile(ggcm_stack[gmt_bin], 1/6, axis=0), np.quantile(ggcm_stack[gmt_bin], 5/6, axis=0)))
 
             # fig_rp.append(
             #     plot_lines_with_intervals(x_array, means, min_max, labels=gmt_bins, fill=True, x_type=float, colors=colors, 
