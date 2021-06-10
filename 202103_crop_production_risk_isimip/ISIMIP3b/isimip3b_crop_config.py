@@ -172,6 +172,27 @@ combine_subcrops = True # combine ri1+ri2=ric and swh+wwh=whe?
 bbox = (-180, -85, 180, 85)
 cp_unit = 't' # Crop potential (exposure) unit, either 't' or 'USD'
 
+
+exp_from_isimip = False
+# if exp_from_isimip==False: exposure created from MIRCA area and SPAM/Ray yield:
+filename_area = 'cultivated_area_MIRCA_GGCMI.nc4'
+filename_yield = 'spam_ray_yields.nc4'
+# which crop index in the netcdf corresponds to which crop type:
+crop_idx_area = {'mai': 1,
+                 'whe': 2,
+                 'soy': 3,
+                 'ric': 4}
+crop_idx_yield = {'mai': 1,
+                  'whe': 2,
+                  'soy': 4,
+                  'ric': 3}
+varnames_area = {'noirr': 'cultivated area rainfed',
+                 'firr': 'cultivated area irrigated',
+                 'combi': 'cultivated area all'}
+varnames_yield = {'noirr': 'yield.rf',
+                 'firr': 'yield.ir',
+                 'combi': 'yield.tot'}
+
 """ Impact calculation: Parameters & Variables """
 impact_mats_filename_list = None # ['imp_full_gepic_2005soc_co2_whe_firr.npz', 'imp_full_pepic_2005soc_co2_whe_firr.npz'] # None
 

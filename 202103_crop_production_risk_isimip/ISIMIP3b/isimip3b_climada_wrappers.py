@@ -12,10 +12,10 @@ import os
 import numpy as np
 import pandas as pd
 import copy
-from iso3166 import countries as iso_cntry
 from scipy import sparse
 
 from climada import util
+import climada.util.coordinates as u_coord
 from climada.engine import Impact
 from climada.hazard import Hazard
 from climada.entity import ImpactFuncSet, IFRelativeCropyield
@@ -28,7 +28,8 @@ import isimip3b_crop_config as co
 util.config.setup_logging('ERROR')
 
 def init_hazs_and_exps(input_dir=co.haz_in_dir, return_data=False,
-                       init_exp=co.init_exp, init_haz=co.init_haz):
+                       init_exp=co.init_exp, init_haz=co.init_haz,
+                       exp_from_isimip=co.exp_from_isimip):
     """
     init hazard and exposure set from all files provided in input folders
 
@@ -69,17 +70,46 @@ def init_hazs_and_exps(input_dir=co.haz_in_dir, return_data=False,
                                                combine_subcrops=co.combine_subcrops)
     else:
         haz_filenames, haz_sets = (None, None)
-    if init_exp:
+    if init_exp and exp_from_isimip:
         print('WARNING: Exposure values depend on choice of hist_mean sets are available in %s' %(co.histmean_dir))
         exp_filenames, exp_sets = cp.init_full_exp_set_isimip(input_dir=co.exp_in_dir,
                                                      hist_mean_dir=co.histmean_dir,
                                                      output_dir=co.out_dir, bbox=co.bbox,
                                                      isimip_version=co.input_version,
                                                      unit=co.cp_unit, return_data=return_data)
+    elif init_exp:
+        exp_filenames, exp_sets = init_full_exp_set_from_nc(return_data=return_data)
     else:
         exp_filenames, exp_sets = (None, None)
     
     return haz_filenames, haz_sets, exp_filenames, exp_sets
+
+def init_full_exp_set_from_nc(crop_types=co.crop_types,
+                              input_dir=co.exp_in_dir,
+                              output_dir=co.exp_dir,
+                              return_data=False):
+    """wrapper around cp.set_from_area_and_yield_nc4(), loop over all crops"""
+    filename_list = list()
+    output_list = list()
+    for crop_type in crop_types:
+        for irr in ('noirr', 'firr'):
+            exp = cp.CropProduction()
+            exp.set_from_area_and_yield_nc4(crop_type,
+                                            co.crop_idx_yield[crop_type],
+                                            co.crop_idx_area[crop_type],
+                                            bbox=co.bbox,
+                                            input_dir=input_dir,
+                                            filename_yield=co.filename_yield,
+                                            filename_area=co.filename_area,
+                                            yield_var=co.varnames_yield[irr],
+                                            area_var=co.varnames_area[irr])
+            filename = ('crop_production_' + crop_type + '-'+ irr + 
+                        '_spam_ray_mirca.hdf5')
+            filename_list.append(filename)
+            exp.write_hdf5(str(output_dir / filename))
+            if return_data:
+                output_list.append(exp)
+    return filename_list, output_list
 
 def import_imp_func_set():
     """imports and returns impact function set
@@ -254,7 +284,8 @@ def calc_country_impacts(normalize=True, haz_filenames=None, irr=None, combine_e
                 for country_idx, country_name in enumerate((countries_list[crop_idx])[1:],1): #enumerate([152, 156])
                     """loop over countries"""
                     try:
-                        column_names.append(iso_cntry.get(country_name).alpha3)
+                        column_names.append(u_coord.country_to_iso(country_name,
+                                                                   representation="alpha3"))
                     except KeyError:
                         column_names.append(str(country_name))
                     print(column_names[-1])
