@@ -114,7 +114,11 @@ def save_results_table(ref_bin=0.5, gmt_bins=None, stats_dir=None, stats=None, b
     if stats_dir is None:
         stats_dir = co.stats_cntry_dir / 'overlapping_20210124_detr_mean'
     if baseline_exp is None:
-        baseline_exp = pd.read_csv(co.impact_dir / 'baseline_exposure_irr_level.csv',
+        try:
+            baseline_exp = pd.read_csv(co.impact_dir / 'baseline_exposure_irr_level.csv',
+                               encoding="ISO-8859-1", header=0)
+        except FileNotFoundError:
+            baseline_exp = pd.read_csv(co.impact_dir / 'baseline_exposure.csv',
                                encoding="ISO-8859-1", header=0)
     if stats is None: 
         # stats = ['mean', 'std', 0.025, "('count_rel_mean', -0.1)", "('count_rel_mean', -0.2)"]

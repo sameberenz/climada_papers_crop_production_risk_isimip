@@ -72,10 +72,10 @@ else: # if run on local machine:
     if init_haz: save_haz = True
     init_exp = False # initiate exposure set?
 
-    run_calc_impact_sets = False
-    load_impact_mats = False 
+    run_calc_impact_sets = True
+    load_impact_mats = True 
     if load_impact_mats: combine_crop_mats = False 
-    run_calc_country_impacts = False # required once for next steps
+    run_calc_country_impacts = True # required once for next steps
     calc_country_statistics = True
     calc_country_statistics_rel2bin = False
     overlapping = True
@@ -196,7 +196,7 @@ varnames_yield = {'noirr': 'yield.rf',
 """ Impact calculation: Parameters & Variables """
 impact_mats_filename_list = None # ['imp_full_gepic_2005soc_co2_whe_firr.npz', 'imp_full_pepic_2005soc_co2_whe_firr.npz'] # None
 
-normalize_exposure = True
+normalize_exposure = False
 rename_event_names = True
 save_combined_haz = False
 save_combined_full_imp = True

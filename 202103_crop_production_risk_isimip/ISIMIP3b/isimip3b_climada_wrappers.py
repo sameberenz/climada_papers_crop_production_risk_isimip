@@ -103,8 +103,9 @@ def init_full_exp_set_from_nc(crop_types=co.crop_types,
                                             filename_area=co.filename_area,
                                             yield_var=co.varnames_yield[irr],
                                             area_var=co.varnames_area[irr])
+            exp.gdf['value'] = np.nan_to_num(exp.gdf.value) # replace NaN by 0.0
             filename = ('crop_production_' + crop_type + '-'+ irr + 
-                        '_spam_ray_mirca.hdf5')
+                        '_spamray-mirca.hdf5')
             filename_list.append(filename)
             exp.write_hdf5(str(output_dir / filename))
             if return_data:
@@ -115,13 +116,13 @@ def import_imp_func_set():
     """imports and returns impact function set
     
     Returns:
-        if_cp (ImpactFuncSet): instance comntaining 1 impact function for crop"""
-    if_cp = ImpactFuncSet()
-    if_def = IFRelativeCropyield()
-    if_def.set_relativeyield()
-    if_cp.append(if_def)
-    if_cp.check()
-    return if_cp
+        impf_cp (ImpactFuncSet): instance comntaining 1 impact function for crop"""
+    impf_cp = ImpactFuncSet()
+    impf_def = IFRelativeCropyield()
+    impf_def.set_relativeyield()
+    impf_cp.append(impf_def)
+    impf_cp.check()
+    return impf_cp
 
 def item_list_from_haz_filenames(haz_filenames, idx_part, keep_duplicates=True,
                                  input_version=co.input_version):
@@ -214,7 +215,7 @@ def calc_country_impacts(normalize=True, haz_filenames=None, irr=None, combine_e
     filenames_exp = [f for f in os.listdir(co.exp_dir) if (os.path.isfile(co.exp_dir / f)) if not
                      f.startswith('.') if 'firr' in f]
 
-    if_cp = import_imp_func_set()
+    impf_cp = import_imp_func_set()
 
     exp_per_country = np.empty([len(crop_list), len(countries_list[0])])
     exp_per_country_firr = np.empty([len(crop_list), len(countries_list[0])])
@@ -236,12 +237,12 @@ def calc_country_impacts(normalize=True, haz_filenames=None, irr=None, combine_e
             exp_noirr.read_hdf5(co.exp_dir / filename_noirr)
 
         exp_firr.assign_centroids(haz, threshold=20)
-        exp_noirr['centr_RC'] = exp_firr.centr_RC
+        exp_noirr.gdf['centr_RC'] = exp_firr.gdf.centr_RC
         if combine_exposure_irr: # sum irrigated + non irrigated exposure
             exp_combi = cp.CropProduction()
             exp_combi.read_hdf5(co.exp_dir / filenames_exp[crop_idx])
-            exp_combi.value = exp_combi.value.values + exp_noirr.value.values
-            exp_combi['centr_RC'] = exp_firr.centr_RC
+            exp_combi.gdf.value = exp_combi.gdf.value.values + exp_noirr.gdf.value.values
+            exp_combi['centr_RC'] = exp_firr.gdf.centr_RC
         print(f'{cropname}: loop over climate scenarios ...')
         for scenario_name in list_scenarios:
             """loop over climate scenarios"""
@@ -290,24 +291,32 @@ def calc_country_impacts(normalize=True, haz_filenames=None, irr=None, combine_e
                         column_names.append(str(country_name))
                     print(column_names[-1])
 
-                    exp_per_country_noirr[crop_idx,country_idx] = np.sum(exp_noirr.loc[exp_noirr.region_id == country_name].value)
-                    exp_per_country_firr[crop_idx,country_idx] = np.sum(exp_firr.loc[exp_noirr.region_id == country_name].value)
-                    exp_per_country[crop_idx,country_idx] = np.sum(exp_noirr.loc[exp_noirr.region_id == country_name].value)+\
-                            np.sum(exp_firr.loc[exp_noirr.region_id == country_name].value)
+                    exp_per_country_noirr[crop_idx,country_idx] = np.sum(exp_noirr.gdf.loc[exp_noirr.gdf.region_id == country_name].value)
+                    exp_per_country_firr[crop_idx,country_idx] = np.sum(exp_firr.gdf.loc[exp_noirr.gdf.region_id == country_name].value)
+                    exp_per_country[crop_idx,country_idx] = np.sum(exp_noirr.gdf.loc[exp_noirr.gdf.region_id == country_name].value)+\
+                            np.sum(exp_firr.gdf.loc[exp_noirr.gdf.region_id == country_name].value)
 
                     impact_firr = Impact()
                     impact_noirr = Impact()
                     if combine_exposure_irr:
-                        impact_firr.calc(exp_combi.loc[exp_firr.region_id == country_name],
-                                         if_cp, haz_firr, save_mat=True)
-                        impact_noirr.calc(exp_combi.loc[exp_noirr.region_id == country_name],
-                                          if_cp, haz_noirr, save_mat=True)
+                        exp_tmp = cp.CropProduction()
+                        exp_tmp.gdf = exp_combi.gdf.loc[exp_firr.gdf.region_id == country_name]
+                        exp_tmp.check()
+                        impact_firr.calc(exp_tmp, impf_cp, haz_firr, save_mat=True)
+                        exp_tmp = cp.CropProduction()
+                        exp_tmp.gdf = exp_combi.gdf.loc[exp_noirr.gdf.region_id == country_name]
+                        exp_tmp.check()
+                        impact_noirr.calc(exp_tmp, impf_cp, haz_noirr, save_mat=True)
                     else:
-                        impact_firr.calc(exp_firr.loc[exp_firr.region_id == country_name],
-                                         if_cp, haz_firr, save_mat=True)
-                        impact_noirr.calc(exp_noirr.loc[exp_noirr.region_id == country_name],
-                                          if_cp, haz_noirr, save_mat=True)
-
+                        exp_tmp = cp.CropProduction()
+                        exp_tmp.gdf = exp_firr.gdf.loc[exp_firr.gdf.region_id == country_name]
+                        exp_tmp.check()
+                        impact_firr.calc(exp_tmp, impf_cp, haz_firr, save_mat=True)
+                        exp_tmp = cp.CropProduction()
+                        exp_tmp.gdf = exp_noirr.gdf.loc[exp_noirr.gdf.region_id == country_name]
+                        exp_tmp.check()
+                        impact_noirr.calc(exp_tmp, impf_cp, haz_noirr, save_mat=True)
+                    del exp_tmp
                     if irr == 'noirr':
                         impact_final[country_idx, :] = np.nan_to_num(impact_noirr.at_event)
                     elif irr == 'firr':
@@ -389,8 +398,10 @@ def init_haz_files_df(haz_filenames, yr_exp=co.yearrange_mean):
             haz_df[haz_fn_parts[idx_part]] = list_tmp
     haz_df['exp_fn'] = None
     for idx in haz_df.index:
-        haz_df['exp_fn'].loc[idx] = f'crop_production_{haz_df.crop[idx]}-{haz_df.irr[idx]}_{yr_exp[0]}-{yr_exp[1]}.hdf5'
-
+        if co.exp_from_isimip:
+            haz_df['exp_fn'].loc[idx] = f'crop_production_{haz_df.crop[idx]}-{haz_df.irr[idx]}_spamray-mirca.hdf5'
+        else:
+            haz_df['exp_fn'].loc[idx] = f'crop_production_{haz_df.crop[idx]}-{haz_df.irr[idx]}_spamray-mirca.hdf5'
     return haz_df
 
 def rename_events(event_sets, filenames, ignore_irr=True):
@@ -506,7 +517,7 @@ def calc_impact_sets(normalize=True, haz_filenames=None, ignore_irr=True, debug=
         crop_list, countries_list, ratio_list, \
         _, _, fao_cp_list, exp_tot_cp_list = cp.normalize_several_exp(input_dir=co.exp_in_dir, output_dir=co.out_dir)
 
-    if_cp = import_imp_func_set()
+    impf_cp = import_imp_func_set()
     impact_sets = list()
     imp_filenames = list()
 
@@ -549,16 +560,17 @@ def calc_impact_sets(normalize=True, haz_filenames=None, ignore_irr=True, debug=
             else:
                 exp = exp_noirr_norm[crop_list.index(crop_type)]
         else:
-            exp_firr = cp.CropProduction()
-            exp_firr.read_hdf5(co.exp_dir / haz_df.loc[haz_df.group_id==idg, 'exp_fn'].unique()[0])
+            exp = cp.CropProduction()
+            exp.read_hdf5(co.exp_dir / haz_df.loc[haz_df.group_id==idg, 'exp_fn'].unique()[0])
         exp.assign_centroids(haz_combined, threshold=20)
+        exp.check()
 
         # calc impact:
         if idg==0 or return_all_mats:
             impact_sets.append(Impact())
         else:
             impact_sets[-1] = Impact()
-        impact_sets[-1].calc(exp, if_cp, haz_combined, save_mat=True)
+        impact_sets[-1].calc(exp, impf_cp, haz_combined, save_mat=True)
 
         fn_ = '%s_%s_%s_%s_%s' %(haz_df.loc[haz_df.group_id==idg, group_by[4]].unique()[0],
                                  haz_df.loc[haz_df.group_id==idg, group_by[1]].unique()[0],
@@ -674,10 +686,14 @@ def imp_mat_add_mean_cp(imp_mat_filenames, impact_sets_or_mats, debug=co.debug):
 
         elif co.normalize_exposure and irr=='noirr':
             exp = np.nan_to_num(exp_noirr_norm[crop_list.index(crop)].value)
+        elif co.exp_from_isimip:
+            exp = cp.CropProduction()
+            exp.read_hdf5(co.exp_dir / f'crop_production_{crop}-{irr}_{co.yearrange_mean[0]}-{co.yearrange_mean[1]}.hdf5')
+            exp = np.nan_to_num(exp.gdf.value)
         else:
             exp = cp.CropProduction()
-            exp.read_hdf5(co.exp_norm_dir / f'crop_production_{crop}-{irr}_{co.yearrange_mean[0]}-{co.yearrange_mean[1]}.hdf5')
-            exp = np.nan_to_num(exp.value)
+            exp.read_hdf5(co.exp_dir / f'crop_production_{crop}-{irr}_spamray-mirca.hdf5')
+            exp = np.nan_to_num(exp.gdf.value)
         if debug: print(f'\n >> exposure range: {exp.min()} to {exp.max()}')
         if isinstance(impact_sets_or_mats[idm], Impact):
             impact_sets_or_mats[idm].imp_mat = sparse.csr_matrix(np.nan_to_num(impact_sets_or_mats[idm].imp_mat))
