@@ -350,3 +350,4 @@ for subdir in result_subfolders: # loop over detrended / not detrended
 
 if co.save_results_table:
     results_df = save_results_table(ref_bin=co.reference_bin)
+

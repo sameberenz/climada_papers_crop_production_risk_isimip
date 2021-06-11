@@ -112,6 +112,36 @@ def init_full_exp_set_from_nc(crop_types=co.crop_types,
                 output_list.append(exp)
     return filename_list, output_list
 
+def init_full_exp_set_from_nc_USD(crop_types=co.crop_types,
+                              input_dir=co.exp_in_dir,
+                              output_dir=co.exp_dir,
+                              return_data=False):
+    """wrapper around cp.set_from_area_and_yield_nc4(), loop over all crops"""
+    filename_list = list()
+    output_list = list()
+    for crop_type in crop_types:
+        for irr in ('noirr', 'firr'):
+            exp = cp.CropProduction()
+            exp.set_from_area_and_yield_nc4(crop_type,
+                                            co.crop_idx_yield[crop_type],
+                                            co.crop_idx_area[crop_type],
+                                            bbox=co.bbox,
+                                            input_dir=input_dir,
+                                            filename_yield=co.filename_yield,
+                                            filename_area=co.filename_area,
+                                            yield_var=co.varnames_yield[irr],
+                                            area_var=co.varnames_area[irr])
+            exp.gdf['value'] = np.nan_to_num(exp.gdf.value) # replace NaN by 0.0
+            filename = ('crop_production_' + crop_type + '-'+ irr + 
+                        '_spamray-mirca_USD.hdf5')
+            filename_list.append(filename)
+            exp.set_value_to_usd(yearrange=(2000, 2009), input_dir=co.exp_in_dir)
+            exp.gdf = exp.gdf.drop(columns=['tonnes_per_year'])
+            exp.write_hdf5(str(output_dir / filename))
+            if return_data:
+                output_list.append(exp)
+    return filename_list, output_list
+
 def import_imp_func_set():
     """imports and returns impact function set
     
