@@ -47,19 +47,19 @@ if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/clus
     make_plots = False
     save_plots = False
 
-    init_haz = False # Initiate hazard sets from NetCDF?
+    init_haz = True # Initiate hazard sets from NetCDF?
     if init_haz: save_haz = True # save hazard sets?
     init_exp = False # initiate and save exposure set?
 
-    run_calc_impact_sets = False # calculate full gridded impacts sets?
-    load_impact_mats = False # load full gridded impact sets from files?
+    run_calc_impact_sets = True # calculate full gridded impacts sets?
+    load_impact_mats = True # load full gridded impact sets from files?
     if load_impact_mats: combine_crop_mats = False # combine crops across full gridded impact sets?
-    run_calc_country_impacts = False # compute impacts per country from hazard and exposures? (required once for next steps)
-    calc_country_statistics = False # compute country-level statistics?
-    calc_country_statistics_rel2bin = False # compute country-level statistics relative to reference bin?
-    overlapping = False # use overallping GMT bins?
+    run_calc_country_impacts = True # compute impacts per country from hazard and exposures? (required once for next steps)
+    calc_country_statistics = True # compute country-level statistics?
+    calc_country_statistics_rel2bin = True # compute country-level statistics relative to reference bin?
+    overlapping = True # use overallping GMT bins?
     save_country_impact_binned = True # save country-level impacts binned per GMT level?
-    calc_country_statistics_kcal = False # compute country-level statistics in kcal?
+    calc_country_statistics_kcal = True # compute country-level statistics in kcal?
 
 
 else: # if run on local machine:
@@ -77,7 +77,7 @@ else: # if run on local machine:
     if load_impact_mats: combine_crop_mats = False 
     run_calc_country_impacts = True # required once for next steps
     calc_country_statistics = True
-    calc_country_statistics_rel2bin = False
+    calc_country_statistics_rel2bin = True
     overlapping = True
     save_country_impact_binned = True
     calc_country_statistics_kcal = False
@@ -288,7 +288,9 @@ statistics_list = [ # for statistics per COUNTRY
     ('count_rel_mean', -.2),
     1/100, 1/80, 1/60, 1/50, 1/40, 1/30, 1/20, 1/10, 1/5, 1/3, 1/2, 2/3, 4/5, 9/10, 19/20, 29/30, 39/40, 49/50, 59/60, 79/80, 99/100,
     'IQR'] # ['mean', 'std', ('count_rel', -.1), 0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975]
-statistics_list_ref = ['mean', 0.01, 0.02, 0.025, 0.05, 0.1, 0.2, 0.5]
+#statistics_list_ref = ['mean', 0.01, 0.02, 0.025, 0.05, 0.1, 0.2, 0.5]
+statistics_list_ref = ['mean', ('count_rel_mean', -.1), ('count_rel_mean', -.2),
+                       0.01, 0.02, 0.025, 0.05, 0.1, 0.2, 0.5]
 
 statistics_list_mat =  [ # for statistics per GRID CELL
     ('count_rel_mean', -.2),
