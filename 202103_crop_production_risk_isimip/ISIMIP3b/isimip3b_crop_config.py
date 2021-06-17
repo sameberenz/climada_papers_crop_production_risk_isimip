@@ -337,4 +337,5 @@ colors_ggcm = {'ISIMIP2b': {'gepic': colors4[0],
                }
 colors_ggcm['ISIMIP3b'] = dict()
 for i, ggcm in enumerate(ggcms['ISIMIP3b']):
-    colors_ggcm['ISIMIP3b'][ggcm] = colors8[i]
+    colors_ggcm['ISIMIP3b'][ggcm] = '#377eb8'
+#    colors_ggcm['ISIMIP3b'][ggcm] = colors8[i] # TODO, more colors?
