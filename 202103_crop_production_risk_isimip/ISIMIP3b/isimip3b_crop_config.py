@@ -41,8 +41,8 @@ if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/clus
     subfolder = False # save output in customized subfolder? if yes, provide folder name as str, else: False
     
     # might require manual parent_dir definition:
-    parent_dir = Path('/cluster/work/climate/eberenzs/crop_analysis')
-
+    #parent_dir = Path('/cluster/work/climate/eberenzs/crop_analysis')
+    parent_dir = Path('/cluster/work/climate/eberenzs/climada_papers_crop_production_risk_isimip/202103_crop_production_risk_isimip/')
     ## booleans (True or False):
     make_plots = False
     save_plots = False
