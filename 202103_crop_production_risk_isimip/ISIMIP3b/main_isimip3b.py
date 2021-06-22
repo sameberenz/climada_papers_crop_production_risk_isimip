@@ -12,7 +12,7 @@ Imports and uses functions and variables from tlocal python scripts.
 Runs the following steps (each can be switched on /off via boolean variables in isimip3b_crop_config):
     1. isimip3b_crop_config (co):
         setting paths, options, parameters, etc.;
-        users can manipulate settings in isimip3b_crop_config. 
+        users can manipulate settings in isimip3b_crop_config.
     2. climada_wrappers (cw, requires CLIMADA repository):
         a) init hazard, hist_mean, and exposure from gridded crop yield simulations
             in input/Hazard folder
@@ -174,7 +174,7 @@ for subdir in result_subfolders: # loop over detrended / not detrended
     if co.calc_country_statistics or co.calc_country_statistics_rel2bin or co.save_country_impact_binned:
         if subdir == '': # not detrended
             country_impact_combined_nodetrend_dict = dict()
-        for irr in co.irr_type_list: # loop over irrigation types. 
+        for irr in co.irr_type_list: # loop over irrigation types.
             # example options: [None], [None, 'noirr', 'firr', 'noirr_fullexp', 'firr_fullexp']
             # Default None combines irrigated and non-irrigated impacts
             print(f'irr: {irr}')
@@ -245,13 +245,13 @@ for subdir in result_subfolders: # loop over detrended / not detrended
                 if country_impact_combined.size > 0:
                     if co.calc_country_statistics:
                         print('\n Statistics...\n')
-                        # country_stats[crop] = 
+                        # country_stats[crop] =
                         impact_statistics.stats_country_binned_self(country_impact_combined,
                                                                     crop=crop,
                                                                     out_dir=stats_cntry_dir_tmp)
                     if co.calc_country_statistics_rel2bin:
                         print('\n Statistics country rel2bin...\n')
-                        # country_stats_rel2bin[crop] = 
+                        # country_stats_rel2bin[crop] =
                         impact_statistics.stats_country_binned_rel2bin(country_impact_combined,
                                                                        crop=crop,
                                                                        out_dir=stats_cntry_dir_tmp)
@@ -341,7 +341,7 @@ for subdir in result_subfolders: # loop over detrended / not detrended
                                                                     out_dir=stats_cntry_dir_tmp)
                     if True:
                         print('\n Statistics country rel2bin...\n')
-                        # country_stats_rel2bin[crop] = 
+                        # country_stats_rel2bin[crop] =
                         impact_statistics.stats_country_binned_rel2bin(country_impact_combined,
                                                                        crop=crop,
                                                                        out_dir=stats_cntry_dir_tmp)
@@ -350,4 +350,3 @@ for subdir in result_subfolders: # loop over detrended / not detrended
 
 if co.save_results_table:
     results_df = save_results_table(ref_bin=co.reference_bin)
-

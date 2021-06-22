@@ -39,7 +39,7 @@ KCAL_PER_TON = {'mai': 3.56e6,
 if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/cluster/'):
     on_cluster = True # run on cluster?
     subfolder = False # save output in customized subfolder? if yes, provide folder name as str, else: False
-    
+
     # might require manual parent_dir definition:
     #parent_dir = Path('/cluster/work/climate/eberenzs/crop_analysis')
     parent_dir = Path('/cluster/work/climate/eberenzs/climada_papers_crop_production_risk_isimip/202103_crop_production_risk_isimip/')
@@ -73,8 +73,8 @@ else: # if run on local machine:
     init_exp = False # initiate exposure set?
 
     run_calc_impact_sets = True
-    load_impact_mats = True 
-    if load_impact_mats: combine_crop_mats = False 
+    load_impact_mats = True
+    if load_impact_mats: combine_crop_mats = False
     run_calc_country_impacts = True # required once for next steps
     calc_country_statistics = True
     calc_country_statistics_rel2bin = True
@@ -93,10 +93,10 @@ res_dir = parent_dir / 'results' / input_version # Path: results directory
 haz_in_dir = in_dir / 'Hazard'
 # haz_in_dir: contains gridded yearly crop yield data (netCDF files) per crop-irrigation combi
 # e.g., whe-firr/lpjml_gfdl-esm4_w5e5_historical_2015soc_default_yield-wwh-firr_global_annual_1850_2014.nc
-exp_in_dir = in_dir / 'Exposure' 
+exp_in_dir = in_dir / 'Exposure'
 # exp_in_dir: contains gridded landuse data from ISIMIP and FAO stats
-# FAOSTAT_data_production_quantity.csv; FAOSTAT_data_country_codes.csv; 
-# histsoc_landuse-15crops_annual_1850_2014.nc; 2015soc_landuse-15crops_annual_1850_2014.nc; 
+# FAOSTAT_data_production_quantity.csv; FAOSTAT_data_country_codes.csv;
+# histsoc_landuse-15crops_annual_1850_2014.nc; 2015soc_landuse-15crops_annual_1850_2014.nc;
 gmt_dir = in_dir / 'gmt'
 # gmt_dir: contains global mean temperature (GMT) info per year sorted by climate scenario and climate model (GCM)
 
@@ -124,13 +124,13 @@ imp_mat_crop_dir = {'mai': imp_mat_dir / 'mai',
                 }
 
 haz_in_sub_dir = {
-                'mai-firr': haz_in_dir / 'mai-firr',
-                'ric-firr': haz_in_dir / 'ric-firr',
-                'soy-firr': haz_in_dir / 'soy-firr',
+                # 'mai-firr': haz_in_dir / 'mai-firr',
+                # 'ric-firr': haz_in_dir / 'ric-firr',
+                # 'soy-firr': haz_in_dir / 'soy-firr',
                 'whe-firr': haz_in_dir / 'whe-firr',
-                'mai-noirr': haz_in_dir / 'mai-noirr',
-                'ric-noirr': haz_in_dir / 'ric-noirr',
-                'soy-noirr': haz_in_dir / 'soy-noirr',
+                # 'mai-noirr': haz_in_dir / 'mai-noirr',
+                # 'ric-noirr': haz_in_dir / 'ric-noirr',
+                # 'soy-noirr': haz_in_dir / 'soy-noirr',
                 'whe-noirr': haz_in_dir / 'whe-noirr',
                 }
 
@@ -256,7 +256,7 @@ gmt_bins_overlapping = [
     np.arange(-.25, 8.75, 1),
     np.arange(0.0, 9., 1),
     np.arange(0.25, 9.25, 1),
-    ] 
+    ]
 
 ## for gridded impact:
 # gmt_bins_stat: provide bin center points(!) for impact matrics only, not used for countries:
@@ -266,7 +266,7 @@ gmt_bins_stat_i_ref_bin = 0 # for impact matrics only, not used for countries
 
 """ Statistics calculation: Parameters & Variables """
 crop_types = ['mai', 'ric', 'soy', 'whe']
-crop_types_tons = ['mai', 'ric', 'soy', 'whe', 'combi-tons'] # ['combi-tons'] # 
+crop_types_tons = ['mai', 'ric', 'soy', 'whe', 'combi-tons'] # ['combi-tons'] #
 crop_types_kcal = ['mai-kcal', 'ric-kcal', 'soy-kcal', 'whe-kcal', 'combi-kcal']
 ggcms = {'ISIMIP2b': ['gepic', 'pepic', 'lpjml', 'clm45'],
          'ISIMIP3b': ['crover', 'cygma1p74', 'epic-iiasa', 'isam', 'landscapedndc', 'lpjml', 'pepic', 'pdssat', 'promet', 'simplace-lintul5'], # May 2021: 10 models, excluding ACEA, DSSAT-Pythia, LPJ GUESS
