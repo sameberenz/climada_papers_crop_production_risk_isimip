@@ -127,10 +127,10 @@ haz_in_sub_dir = {
                 #'mai-firr': haz_in_dir / 'mai-firr',
                 #'ric-firr': haz_in_dir / 'ric-firr',
                 #'soy-firr': haz_in_dir / 'soy-firr',
-                # 'whe-firr': haz_in_dir / 'whe-firr',
-                'mai-noirr': haz_in_dir / 'mai-noirr',
-                'ric-noirr': haz_in_dir / 'ric-noirr',
-                'soy-noirr': haz_in_dir / 'soy-noirr',
+                'whe-firr': haz_in_dir / 'whe-firr',
+                #'mai-noirr': haz_in_dir / 'mai-noirr',
+                #'ric-noirr': haz_in_dir / 'ric-noirr',
+                #'soy-noirr': haz_in_dir / 'soy-noirr',
                 'whe-noirr': haz_in_dir / 'whe-noirr',
                 }
 
