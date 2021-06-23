@@ -47,11 +47,11 @@ if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/clus
     make_plots = False
     save_plots = False
 
-    init_haz = True # Initiate hazard sets from NetCDF?
+    init_haz = False # True # Initiate hazard sets from NetCDF?
     if init_haz: save_haz = True # save hazard sets?
     init_exp = False # initiate and save exposure set?
 
-    run_calc_impact_sets = True # calculate full gridded impacts sets?
+    run_calc_impact_sets = False # True # calculate full gridded impacts sets?
     load_impact_mats = True # load full gridded impact sets from files?
     if load_impact_mats: combine_crop_mats = False # combine crops across full gridded impact sets?
     run_calc_country_impacts = True # compute impacts per country from hazard and exposures? (required once for next steps)
@@ -124,13 +124,13 @@ imp_mat_crop_dir = {'mai': imp_mat_dir / 'mai',
                 }
 
 haz_in_sub_dir = {
-                #'mai-firr': haz_in_dir / 'mai-firr',
-                #'ric-firr': haz_in_dir / 'ric-firr',
-                #'soy-firr': haz_in_dir / 'soy-firr',
+                'mai-firr': haz_in_dir / 'mai-firr',
+                'ric-firr': haz_in_dir / 'ric-firr',
+                'soy-firr': haz_in_dir / 'soy-firr',
                 'whe-firr': haz_in_dir / 'whe-firr',
-                #'mai-noirr': haz_in_dir / 'mai-noirr',
-                #'ric-noirr': haz_in_dir / 'ric-noirr',
-                #'soy-noirr': haz_in_dir / 'soy-noirr',
+                'mai-noirr': haz_in_dir / 'mai-noirr',
+                'ric-noirr': haz_in_dir / 'ric-noirr',
+                'soy-noirr': haz_in_dir / 'soy-noirr',
                 'whe-noirr': haz_in_dir / 'whe-noirr',
                 }
 
