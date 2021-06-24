@@ -52,7 +52,7 @@ if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/clus
     init_exp = False # initiate and save exposure set?
 
     run_calc_impact_sets = False # True # calculate full gridded impacts sets?
-    load_impact_mats = True # load full gridded impact sets from files?
+    load_impact_mats = False # load full gridded impact sets from files?
     if load_impact_mats: combine_crop_mats = False # combine crops across full gridded impact sets?
     run_calc_country_impacts = True # compute impacts per country from hazard and exposures? (required once for next steps)
     calc_country_statistics = True # compute country-level statistics?
