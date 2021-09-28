@@ -47,7 +47,7 @@ if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/clus
     make_plots = False
     save_plots = False
 
-    init_haz = False # True # Initiate hazard sets from NetCDF?
+    init_haz = True # True # Initiate hazard sets from NetCDF?
     if init_haz: save_haz = True # save hazard sets?
     init_exp = False # initiate and save exposure set?
 
