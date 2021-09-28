@@ -269,8 +269,8 @@ crop_types = ['mai', 'ric', 'soy', 'whe']
 crop_types_tons = ['mai', 'ric', 'soy', 'whe', 'combi-tons'] # ['combi-tons'] #
 crop_types_kcal = ['mai-kcal', 'ric-kcal', 'soy-kcal', 'whe-kcal', 'combi-kcal']
 ggcms = {'ISIMIP2b': ['gepic', 'pepic', 'lpjml', 'clm45'],
-         'ISIMIP3b': ['ldndc'], #['crover', 'cygma1p74', 'epic-iiasa', 'isam', 'ldndc', 'lpjml', 'pepic', 'pdssat', 'promet', 'simplace-lintul5'], # May 2021: 10 models, excluding ACEA, DSSAT-Pythia, LPJ GUESS
-         'ISIMIP3b_allcrops': ['ldndc'],#['crover', 'cygma1p74', 'epic-iiasa', 'isam', 'ldndc', 'lpjml', 'pepic', 'pdssat', 'promet'], # May 2021: 9 models, excluding simplace (no rice), check others...
+         'ISIMIP3b': ['crover', 'cygma1p74', 'epic-iiasa', 'isam', 'ldndc', 'lpjml', 'pepic', 'pdssat', 'promet', 'simplace-lintul5'], # May 2021: 10 models, excluding ACEA, DSSAT-Pythia, LPJ GUESS
+         'ISIMIP3b_allcrops': ['crover', 'cygma1p74', 'epic-iiasa', 'isam', 'ldndc', 'lpjml', 'pepic', 'pdssat', 'promet'], # May 2021: 9 models, excluding simplace (no rice), check others...
          #'ISIMIP3b': ['acea', 'crover', 'cygma1p74', 'epic-iiasa', 'lpjml', 'pepic', 'promet', 'simplace-lintul5'], # 8 models
          #'ISIMIP3b_allcrops': ['crover', 'cygma1p74', 'epic-iiasa', 'lpjml', 'pepic', 'promet'], # 6 models
          # 'ISIMIP3b': ['AquaCrop-ACEA', 'CROVER', 'CYGMA1p74', 'LPJmL', 'EPIC-IIASA', 'PEPIC', 'PROMET', 'SIMPLACE-LINTUL5+'],
