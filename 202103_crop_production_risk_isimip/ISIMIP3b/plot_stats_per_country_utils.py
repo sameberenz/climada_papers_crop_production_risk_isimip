@@ -42,7 +42,7 @@ def plot_ax_binned_impacts(df, fig=None, ax=None, subplot_i=(1,1,1),
         if not (gmt_bin in gmt_bins_col):
             colors_per_bin[gmt_bin] = '#636363' # grey
 
-    for gmt_bin in df.bin.unique():
+    for gmt_bin in np.sort(df.bin.unique()):
         if gmt_bin in gmt_bins_col:
 
             if hlines:
@@ -140,16 +140,26 @@ def plot_binned_impacts(input_dir=co.out_dir, fn_str=None, crop=None, bin_colors
             ggcms_sel = np.sort(df.ggcm.unique())
         if per_ggcm:
             abc = 'abcdefghijklmnopr'
+            if len(ggcms_sel) < 10:
+                suplotshape = (3,3)
+                figsize = (12,10)
+            elif len(ggcms_sel) == 10:
+                suplotshape = (4,3)
+                figsize = (12,15)
+            else:
+                suplotshape = (4,3)
+                figsize = (12,15)
             fig = plt.figure(facecolor='w', figsize=(12,10))
             for iggcm, ggcm in enumerate(ggcms_sel):
-                subplot_i = (3,3,iggcm+1)
-                if iggcm in [0, 3, 6]:
+                subplot_i = (suplotshape[0],suplotshape[1],iggcm+1)
+                if iggcm in [0, subplot_i[1], 2*subplot_i[1]]:
                     ylabel_ggcm = ylabel
                 else:
                     ylabel_ggcm = None
                 ylims = (df[country].min(), df[country].max())
                 ax = fig.add_subplot(subplot_i[0], subplot_i[1], subplot_i[2])
                 df_sel = df.loc[df.ggcm==ggcm]
+
                 if iggcm == 0:
                     df_combi = df.loc[df.ggcm==ggcm]
                 else:

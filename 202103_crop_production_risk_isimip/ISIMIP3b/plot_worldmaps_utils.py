@@ -30,6 +30,7 @@ from pathlib import Path
 
 import mplotutils as mpu
 # https://github.com/mathause/mplotutils
+# i.e. pip install https://github.com/mathause/mplotutils/archive/v0.2.0.zip
 import isimip3b_crop_config as co
 
 
@@ -318,7 +319,7 @@ def plot_map_of_colored_countries(country_array, data_array, levels=None, colors
 
     # init world map plot
     fig_map, ax = plt.subplots(1, 1, subplot_kw=dict(projection=ccrs.PlateCarree()),
-                               figsize=figsize)
+                               figsize=figsize)#, constrained_layout=True)
     ax.set_facecolor('w') # '#d9d9d9''#f0f0f0')
     # paint background (no data) grey:
     ax.add_feature(cfeature.LAND, facecolor='#e0e0e0', edgecolor='none', lw=0, zorder=.9)
@@ -391,5 +392,6 @@ def plot_map_of_colored_countries(country_array, data_array, levels=None, colors
     ax.yaxis.set_major_formatter(LatitudeFormatter())
     
     ax.set_title(title)
+    plt.tight_layout()
     plt.show()
     return fig_map, ax, countries_included, countries_excluded

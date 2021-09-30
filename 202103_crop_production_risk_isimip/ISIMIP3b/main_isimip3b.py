@@ -28,7 +28,11 @@ from scipy import sparse
 
 """1. import functional modules & config from config.py """
 import isimip3b_crop_config as co
-import isimip3b_climada_wrappers as cw
+if co.init_exp or co.init_haz or co.run_calc_impact_sets or co.load_impact_mats or \
+    co.run_calc_country_impacts or co.calc_country_statistics or co.calc_country_statistics_rel2bin or \
+    co.save_country_impact_binned or co.calc_country_statistics_kcal:
+    print('importing climada wrappers (requires CLIMADA)')
+    import isimip3b_climada_wrappers as cw
 import isimip3b_gmt_binning as gmt_binning
 import isimip3b_impact_statistics as impact_statistics
 
@@ -349,4 +353,4 @@ for subdir in result_subfolders: # loop over detrended / not detrended
                     print('[No data, no statistics]\n')
 
 if co.save_results_table:
-    results_df = save_results_table(ref_bin=co.reference_bin)
+    results_df, baseline_exp_df = save_results_table(ref_bin=co.reference_bin)

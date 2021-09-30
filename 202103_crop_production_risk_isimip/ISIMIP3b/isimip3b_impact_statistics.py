@@ -20,7 +20,7 @@ from sklearn.preprocessing import PolynomialFeatures
 import isimip3b_crop_config as co
 import isimip3b_gmt_binning as gmt_binning
 
-def single_stat_country(df, stat):
+def single_stat_country(df, stat, return_count_rel_value=False):
     """
     calculate single statistic per country from dataframe
     
@@ -30,6 +30,7 @@ def single_stat_country(df, stat):
         Impacts per country and event.
     stat : str
         statistic to calculate.
+    return_count_rel_value : boolean
 
     Returns
     -------
@@ -53,13 +54,15 @@ def single_stat_country(df, stat):
                 for idx in results.index:
                     if idx=='Year':
                         results.loc[idx] = np.nan
+                    elif return_count_rel_value:
+                        results.loc[idx] = reference * (1+stat[1])
                     else:
                         results.loc[idx] = ((df[idx]/reference[idx])<(1+stat[1])).sum() / df[idx].size
     else: results = None
     return results
 
 def stats_country_binned_self(impact_comb, statistics_list=None, crop=None, save=True,
-                              out_dir=None):
+                              out_dir=None, return_count_rel_value=False):
     """Compute statistics per country and globally for a given combined country-impact dataframe
     
     Parameters:
@@ -71,6 +74,8 @@ def stats_country_binned_self(impact_comb, statistics_list=None, crop=None, save
         save (boolean): save output?
         statistics_list(list): c.f. crop_config.statistics_list (default)
         out_dir (Path): output directory for saving statistics as CSV
+        return_count_rel_value (bool): return value of count_rel instead of ratio count?
+            e.g. mean-10% instead of N(mean-10%)/N(all)? Default False
 
     Returns:
         stats_df :  DataFrame
@@ -90,7 +95,9 @@ def stats_country_binned_self(impact_comb, statistics_list=None, crop=None, save
             # loop over statistics:
             for idx, stat in enumerate(statistics_list):
                 # filter by bin, ggcm, and stat and calculate statistic
-                stats_df_tmp.loc[idx] = single_stat_country(impact_comb.loc[(impact_comb.bin==gmt_bin) & (impact_comb.ggcm==ggcm)].drop(columns=['bin']), stat)
+                stats_df_tmp.loc[idx] = single_stat_country(impact_comb.loc[(impact_comb.bin==gmt_bin) & (impact_comb.ggcm==ggcm)].drop(columns=['bin']),
+                                                            stat,
+                                                            return_count_rel_value=return_count_rel_value)
                 stats_df_tmp.loc[idx, 'stat'] = stat
             stats_df_tmp['N_years'] = impact_comb.loc[(impact_comb.bin==gmt_bin) & (impact_comb.ggcm==ggcm)].shape[0]
             stats_df_tmp['bin'] = gmt_bin
@@ -101,6 +108,7 @@ def stats_country_binned_self(impact_comb, statistics_list=None, crop=None, save
         stats_df[cols].reset_index(drop=True).to_csv(out_dir / f'stats_country_binned_self_{crop}.csv',
                                                      index=False)
     return stats_df[cols].reset_index(drop=True)
+
 
 def stats_country_binned_rel2bin(impact_comb, reference_bin=None, statistics_list=None,
                                  save=True, crop=None, out_dir=None):
@@ -126,7 +134,8 @@ def stats_country_binned_rel2bin(impact_comb, reference_bin=None, statistics_lis
     if not reference_bin: reference_bin = co.reference_bin
     if not statistics_list: statistics_list = co.statistics_list_ref
     # 1. use stats_country_binned_self to get reference statistics
-    stats_self = stats_country_binned_self(impact_comb, statistics_list=statistics_list, save=False)
+    stats_self = stats_country_binned_self(impact_comb, statistics_list=statistics_list, save=False,
+                                           return_count_rel_value=True)
     stats_ref = stats_self.loc[stats_self.bin==reference_bin]
     # 2. get statistics relative to reference statistics of reference_bin and same ggcm
     stats_df = pd.DataFrame(columns=stats_self.columns)

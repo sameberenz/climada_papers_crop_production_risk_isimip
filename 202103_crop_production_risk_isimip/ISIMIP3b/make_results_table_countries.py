@@ -112,7 +112,7 @@ def save_results_table(ref_bin=0.5, gmt_bins=None, stats_dir=None, stats=None, b
     if gmt_bins is None:
         gmt_bins = [0.5, 2, 4]# np.arange(0,7,.5) # [0.5, 2, 4] #
     if stats_dir is None:
-        stats_dir = co.stats_cntry_dir / 'overlapping_20210124_detr_mean'
+        stats_dir = co.stats_cntry_dir / 'overlapping' / 'Detrended' #'overlapping_20210124_detr_mean'
     if baseline_exp is None:
         try:
             baseline_exp = pd.read_csv(co.impact_dir / 'baseline_exposure_irr_level.csv',
@@ -142,6 +142,8 @@ def save_results_table(ref_bin=0.5, gmt_bins=None, stats_dir=None, stats=None, b
     except:
         combi_tons = False
     print(f'combi-tons: {combi_tons}')
+    print(crop)
+    print(df_self_dict)
     countries = list(df_self_dict[crop].columns[5:])
     
     print(countries)
@@ -178,12 +180,20 @@ def save_results_table(ref_bin=0.5, gmt_bins=None, stats_dir=None, stats=None, b
                 np.nansum(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'Exposure'), 'AFG':].values.squeeze())
             combi_kcal_glb_exp += KCAL_PER_TON[cr] * np.nansum(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'Exposure'), 'AFG':].values.squeeze())
             combi_kcal_glb_firr_exp += KCAL_PER_TON[cr] * np.nansum(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'Exposure_firr'), 'AFG':].values.squeeze())
-            column_arrays['irrigation_ratio'] = list(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'irr_ratio'), 'AFG':].values.squeeze()) 
+            if 'irr_ratio' in baseline_exp['Crop Production'].values:
+                column_arrays['irrigation_ratio'] = list(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'irr_ratio'), 'AFG':].values.squeeze()) 
+            else:
+                column_arrays['irrigation_ratio'] = list(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'Exposure_firr'), 'AFG':].values.squeeze() / \
+                    baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'Exposure'), 'AFG':].values.squeeze())
             column_arrays['irrigation_ratio'].append(irr_glb)
         else:
             combi = True
             cr = crop
-            column_arrays['irrigation_ratio'] = list(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'irr_ratio'), 'AFG':].values.squeeze()) 
+            if 'irr_ratio' in baseline_exp['Crop Production'].values:
+                column_arrays['irrigation_ratio'] = list(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'irr_ratio'), 'AFG':].values.squeeze())
+            else:
+                column_arrays['irrigation_ratio'] = list(baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'Exposure_firr'), 'AFG':].values.squeeze() / \
+                    baseline_exp.loc[(baseline_exp['Crop'] == cr) & (baseline_exp['Crop Production'] == 'Exposure'), 'AFG':].values.squeeze())
             column_arrays['irrigation_ratio'].append(combi_kcal_glb_firr_exp / combi_kcal_glb_exp)
     
         if combi and (co.input_version=='ISIMIP3b'):
@@ -299,12 +309,17 @@ def save_results_table(ref_bin=0.5, gmt_bins=None, stats_dir=None, stats=None, b
                 
     
         df_crop = pd.DataFrame(index=np.arange(len(countries)), columns=column_keys)
+
         for col in column_keys:
-            df_crop[col] = column_arrays[col]
+            try:
+                df_crop[col] = column_arrays[col]
+            except ValueError as err:
+                print(col)
+                print(err)
         if i_cr==0:
             df = df_crop
         else:
             df = df.append(df_crop)
             df = df.reset_index(drop=True)
     df.to_csv(res_dir / res_fn, index=False)
-    return df
+    return df, baseline_exp

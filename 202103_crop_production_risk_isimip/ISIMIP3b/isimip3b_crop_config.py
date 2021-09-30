@@ -54,12 +54,13 @@ if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/clus
     run_calc_impact_sets = False # True # calculate full gridded impacts sets?
     load_impact_mats = False # load full gridded impact sets from files?
     if load_impact_mats: combine_crop_mats = False # combine crops across full gridded impact sets?
-    run_calc_country_impacts = True # compute impacts per country from hazard and exposures? (required once for next steps)
+    run_calc_country_impacts = False # compute impacts per country from hazard and exposures? (required once for next steps)
     calc_country_statistics = True # compute country-level statistics?
     calc_country_statistics_rel2bin = True # compute country-level statistics relative to reference bin?
     overlapping = True # use overallping GMT bins?
     save_country_impact_binned = True # save country-level impacts binned per GMT level?
     calc_country_statistics_kcal = True # compute country-level statistics in kcal?
+    save_results_table = True
 
 
 else: # if run on local machine:
@@ -72,15 +73,16 @@ else: # if run on local machine:
     if init_haz: save_haz = True
     init_exp = False # initiate exposure set?
 
-    run_calc_impact_sets = True
-    load_impact_mats = True
+    run_calc_impact_sets = False
+    load_impact_mats = False
     if load_impact_mats: combine_crop_mats = False
-    run_calc_country_impacts = True # required once for next steps
-    calc_country_statistics = True
-    calc_country_statistics_rel2bin = True
+    run_calc_country_impacts = False # required once for next steps
+    calc_country_statistics = False
+    calc_country_statistics_rel2bin = False
     overlapping = True
-    save_country_impact_binned = True
+    save_country_impact_binned = False
     calc_country_statistics_kcal = False
+    save_results_table = True
 
 print(f'on_cluster: {on_cluster}')
 #----------------------------------
@@ -311,7 +313,7 @@ statistics_list_mat_ref = [ # for statistics per GRID CELL, compared to referenc
     0.5,
     'mean'
     ]
-save_results_table = True
+
 
 """ Plotting: Parameters and color lists """
 colors4 = ['#e41a1c','#377eb8','#4daf4a','#984ea3']

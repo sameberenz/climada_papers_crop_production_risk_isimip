@@ -26,17 +26,17 @@ input_dir = co.out_dir / 'Stats_countries'
 save_dir = co.plot_dir
 
 # select which plot types to make
-impact_data_plot = 0
+impact_data_plot = 1
 pr_plots_crops = 0 # y : Probability Ratio, x : global warming level (GMT bin)
 pp_plots_crops = 0 # y : Probability, x : GMT bin
-rp_plots_crops = 1 # y : Delta Production, x : Return Period
+rp_plots_crops = 0 # y : Delta Production, x : Return Period
 cv_plots_crops = 0 # y : Coefficient of variation, x : GMT_bin
 
 # crop type; can also be list. Default: None --> all 
-crop = None # ['combi-kcal'] # None # ['ric'] # None # ['ric'] # ['whe'] # None
+crop = ['mai'] # None # ['combi-kcal'] # None # ['ric'] # None # ['ric'] # ['whe'] # None
 
 # countries (list); None --> main producers
-countries = None # ['GLB', 'ARG', 'USA'] # None # ['GLB'] # ['CHE'] # None # ['GLB', 'USA', 'CHN']
+countries = ['GLB', 'ARG', 'USA'] # None # ['GLB'] # ['CHE'] # None # ['GLB', 'USA', 'CHN']
 
 max_bin = 4.5 # max. GMT bin on x axis
 
