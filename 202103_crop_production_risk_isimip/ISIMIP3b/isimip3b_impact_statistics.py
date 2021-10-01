@@ -48,16 +48,19 @@ def single_stat_country(df, stat, return_count_rel_value=False):
     elif isinstance(stat, tuple):
         if 'count_rel' in stat[0]:
             if isinstance(stat[1], float):
-                if 'mean' in stat[0]: reference = df.mean()
-                elif 'median' in stat[0]: reference = df.median()
-                results = reference*0
-                for idx in results.index:
-                    if idx=='Year':
-                        results.loc[idx] = np.nan
-                    elif return_count_rel_value:
-                        results.loc[idx] = reference * (1+stat[1])
-                    else:
-                        results.loc[idx] = ((df[idx]/reference[idx])<(1+stat[1])).sum() / df[idx].size
+                if 'mean' in stat[0]:
+                    reference = df.mean()
+                elif 'median' in stat[0]:
+                    reference = df.median()
+                if return_count_rel_value:
+                    results = reference * (1+stat[1])
+                else:
+                    results = reference*0
+                    for idx in results.index:
+                        if idx=='Year':
+                            results.loc[idx] = np.nan
+                        else:
+                            results.loc[idx] = ((df[idx]/reference[idx])<(1+stat[1])).sum() / df[idx].size
     else: results = None
     return results
 

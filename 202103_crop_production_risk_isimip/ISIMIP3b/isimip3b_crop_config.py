@@ -62,7 +62,6 @@ if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/clus
     calc_country_statistics_kcal = True # compute country-level statistics in kcal?
     save_results_table = True
 
-
 else: # if run on local machine:
     on_cluster = False
     subfolder = False
