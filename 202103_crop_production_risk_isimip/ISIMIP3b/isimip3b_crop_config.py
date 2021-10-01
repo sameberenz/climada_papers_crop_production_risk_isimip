@@ -54,7 +54,7 @@ if os.path.dirname(os.path.dirname(os.path.abspath(__file__))).startswith('/clus
     run_calc_impact_sets = False # True # calculate full gridded impacts sets?
     load_impact_mats = False # load full gridded impact sets from files?
     if load_impact_mats: combine_crop_mats = False # combine crops across full gridded impact sets?
-    run_calc_country_impacts = True # compute impacts per country from hazard and exposures? (required once for next steps)
+    run_calc_country_impacts = False # compute impacts per country from hazard and exposures? (required once for next steps)
     calc_country_statistics = True # compute country-level statistics?
     calc_country_statistics_rel2bin = True # compute country-level statistics relative to reference bin?
     overlapping = True # use overallping GMT bins?
