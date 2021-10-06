@@ -353,4 +353,13 @@ for subdir in result_subfolders: # loop over detrended / not detrended
                     print('[No data, no statistics]\n')
 
 if co.save_results_table:
-    results_df, baseline_exp_df = save_results_table(ref_bin=co.reference_bin)
+    if co.overlapping and co.detrend_country_impacts:
+        stats_dir = co.stats_cntry_dir / 'overlapping' / 'Detrended'
+    elif co.overlapping:
+        stats_dir = co.stats_cntry_dir / 'overlapping'
+    else:
+        stats_dir = co.stats_cntry_dir
+    print(stats_dir)
+
+    results_df, baseline_exp_df = save_results_table(ref_bin=co.reference_bin,
+                                                     stats_dir=stats_dir)

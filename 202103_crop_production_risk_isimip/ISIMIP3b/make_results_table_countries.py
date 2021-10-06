@@ -122,7 +122,7 @@ def save_results_table(ref_bin=0.5, gmt_bins=None, stats_dir=None, stats=None, b
                                encoding="ISO-8859-1", header=0)
     if stats is None: 
         # stats = ['mean', 'std', 0.025, "('count_rel_mean', -0.1)", "('count_rel_mean', -0.2)"]
-        stats = ['mean', 'std', 0.025, "('count_rel_mean', -0.1)"]
+        stats = ['mean', 'std', 0.025, "('count_hist_mean', -0.1)", "('count_rel_mean', -0.1)"]
     
     pop_data_path = co.in_dir / 'worldbank_population_v2020.csv'
     pop_year = '2018'
@@ -211,9 +211,12 @@ def save_results_table(ref_bin=0.5, gmt_bins=None, stats_dir=None, stats=None, b
         print(crop)
         print(np.sort(df_self_cr.ggcm.unique()))
         print(df_self_cr.shape)
-    
+
+        # general statistics:
         for stat in stats:
             stat = str(stat)
+            if 'count_hist_mean' in stat:
+                continue
             i_cntry_start = 3
             column_keys.append(f'ref. {stat} {ref_bin:1.1f}C [kcal p.c./y]')
             df_ref_ = df_self_cr.loc[(df_self_cr.stat==stat) & (df_self_cr.bin==ref_bin)].reset_index(drop=True).select_dtypes(np.number)
@@ -226,27 +229,38 @@ def save_results_table(ref_bin=0.5, gmt_bins=None, stats_dir=None, stats=None, b
             else:
                 column_keys.append(f'ref. {stat} {ref_bin:1.1f}C [t/y]')
                 column_arrays[column_keys[-1]] = np.nan_to_num(df_ref_.median()[i_cntry_start:].values) / KCAL_PER_TON[cr]
-    
+        # PP and PR:
         for gmt_bin in gmt_bins:
             for stat in stats:
                 if isinstance(stat, str) and 'count_rel_mean' in stat:
                     dev_ = float(stat.split('-')[-1][:-1])
-                    column_keys.append(f'PP (IQR) {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') # -3
-                    column_keys.append(f'PP {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') #-2
-                    column_keys.append(f'PR {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') # -1
+                    column_keys.append(f'PPr (IQR) {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') # -3
+                    column_keys.append(f'PPr {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') #-2
+                    column_keys.append(f'PRr {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') # -1
                     #column_keys.append(f'PR* {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') #
                     i_cntry_start = 3
                     df_ref_ = df_self_cr.loc[(df_self_cr.stat==stat) & (df_self_cr.bin==ref_bin)].reset_index(drop=True).select_dtypes(np.number)
                     df_ = df_self_cr.loc[(df_self_cr.stat==stat) & (df_self_cr.bin==gmt_bin)].reset_index(drop=True).select_dtypes(np.number)
-                    key_ref_pp = f'PP {1-dev_:1.1f}*mean {ref_bin:1.1f}C'
-                    key_ref_pr = f'PR {1-dev_:1.1f}*mean {ref_bin:1.1f}C'
+                    key_ref_pp = f'PPr {1-dev_:1.1f}*mean {ref_bin:1.1f}C'
+                    key_ref_pr = f'PRr {1-dev_:1.1f}*mean {ref_bin:1.1f}C'
+                elif isinstance(stat, str) and 'count_hist_mean' in stat:
+                    dev_ = float(stat.split('-')[-1][:-1])
+                    column_keys.append(f'PPh (IQR) {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') # -3
+                    column_keys.append(f'PPh {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') #-2
+                    column_keys.append(f'PRh {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') # -1
+                    #column_keys.append(f'PR* {1-dev_:1.1f}*mean {gmt_bin:1.1f}C') #
+                    i_cntry_start = 3
+                    df_ref_ = df_rel_cr.loc[(df_rel_cr.stat==stat.replace('_hist_', '_rel_')) & (df_rel_cr.bin==ref_bin)].reset_index(drop=True).select_dtypes(np.number)
+                    df_ = df_rel_cr.loc[(df_rel_cr.stat==stat.replace('_hist_', '_rel_')) & (df_rel_cr.bin==gmt_bin)].reset_index(drop=True).select_dtypes(np.number)
+                    key_ref_pp = f'PPh {1-dev_:1.1f}*mean {ref_bin:1.1f}C'
+                    key_ref_pr = f'PRh {1-dev_:1.1f}*mean {ref_bin:1.1f}C'
                 elif isinstance(stat, float) or isinstance(stat, int):
-                    column_keys.append(f'PP (IQR) {100*stat}th p {gmt_bin:1.1f}C')
-                    column_keys.append(f'PP {100*stat}th p {gmt_bin:1.1f}C')
-                    column_keys.append(f'PR {100*stat}th p {gmt_bin:1.1f}C')
+                    column_keys.append(f'PPh (IQR) {100*stat}th p {gmt_bin:1.1f}C')
+                    column_keys.append(f'PPh {100*stat}th p {gmt_bin:1.1f}C')
+                    column_keys.append(f'PRh {100*stat}th p {gmt_bin:1.1f}C')
                     #column_keys.append(f'PR* {100*stat}th p {gmt_bin:1.1f}C')
-                    key_ref_pp = f'PP {100*stat}th p {ref_bin:1.1f}C'
-                    key_ref_pr = f'PR {100*stat}th p {ref_bin:1.1f}C'
+                    key_ref_pp = f'PPh {100*stat}th p {ref_bin:1.1f}C'
+                    key_ref_pr = f'PRh {100*stat}th p {ref_bin:1.1f}C'
                     stat = str(stat)
                     i_cntry_start = 3
                     df_ref_ = df_rel_cr.loc[(df_rel_cr.stat==stat) & (df_rel_cr.bin==ref_bin)].reset_index(drop=True).select_dtypes(np.number)

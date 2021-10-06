@@ -167,6 +167,22 @@ def get_colormap_pr(levels=None, pal=None, extend=None):
     cmap, norm = from_levels_and_colors(levels, pal, extend=extend)
     return cmap, norm, levels, pal
 
+def get_colormap_pr_thiery(levels=None, pal=None, extend=None):
+    if not levels:
+        levels = np.array([1/10, 1/8, 1/6, 1/4, 1/2, 1, 2, 4, 6, 8, 10]) # 10 intervals
+    if not extend:
+        extend = 'both'
+    if not pal:
+        pal = ['#003572', '#2166ac', '#4393c3', '#92c5de', '#d1e5f0', # 5x blue, darkest: '#053061', 
+         '#f7f7f7', '#f7f7f7', # 2x grey
+         '#fddbc7', '#f4a582', '#d6604d', '#b2182b', '#67001f'] # 5x red"""
+        """pal = ['#2166ac', '#4393c3', '#92c5de', '#d1e5f0', # blue
+         '#f7f7f7', # grey
+         '#fddbc7', '#f4a582', '#d6604d', '#b2182b'] # red"""
+    cmap, norm = from_levels_and_colors(levels, pal, extend=extend)
+    tick_labels = ["1/10", "1/8", "1/6", "1/4", "1/2", "1", "2", "4", "6", "8", "10"]
+    return cmap, norm, levels, pal, tick_labels
+
 def plot_mat_stat_single_old(ds, figsize=(10,10), title=None, inverse=False, replace_zeros=False, cmap=None):
     if cmap is None: cmap = 'YlOrRd'
     if title is None: title = ''
@@ -292,7 +308,7 @@ def xr_concat_stat(objs, dim, agg_stat=None, divide=0, share_conistent=.7):
 
 
 def plot_map_of_colored_countries(country_array, data_array, levels=None, colors=None, extent=None, figsize=(10,10),
-                                 title=None, cbar_label=None, extend=None, hatches=None):
+                                 title=None, cbar_label=None, extend=None, hatches=None, tick_labels=None):
     """
     data_array and country_array need to correspond.
     levels need to have length len(colors)+1
@@ -379,6 +395,8 @@ def plot_map_of_colored_countries(country_array, data_array, levels=None, colors
     y = -np.arange(2 + 1) - extent[-1] -1  # -np.arange(nrows + 1) + extent[-1] 
     h = ax.pcolormesh(x, y, Z, cmap=cmap, norm=norm, zorder=0.5, alpha=1)
     cbar = mpu.colorbar(h, ax, orientation='horizontal', aspect=30, ticks=levels)
+    if tick_labels:
+        cbar.ax.set_xticklabels(tick_labels)
     cbar.ax.set_xlabel(cbar_label)#, rotation=270)
 
     # set the ticks
