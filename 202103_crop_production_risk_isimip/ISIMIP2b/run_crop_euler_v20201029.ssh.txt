@@ -1,0 +1,8 @@
+#!/bin/sh
+cd /cluster/work/climate/eberenzs/climada_python
+source activate climada_env
+python3 - <<-EOF
+        exec(open("/cluster/work/climate/eberenzs/crop_analysis/ISIMIP2b/main_isimip2b.py").read())        
+EOF
+conda deactivate
+echo didadone
