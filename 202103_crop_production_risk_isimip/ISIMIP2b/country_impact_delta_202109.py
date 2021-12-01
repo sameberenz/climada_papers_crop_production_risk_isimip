@@ -119,7 +119,7 @@ for idx, fn_firr in enumerate(filenames_firr):
         if len(cntry) != 3:
             print()
             continue
-        delta_rel_combi[cntry] = (data_noirr[cntry] /
+        delta_rel_combi[cntry] = (data_noirr[cntry] / \
                                   baseline.loc[(baseline.crop==crop) & (baseline.variable==var['noirr-fullexp'])][cntry].values[0] \
                                  - data_firr[cntry] 
                                  baseline.loc[(baseline.crop==crop) & (baseline.variable==var['firr-fullexp'])][cntry].values[0]) \

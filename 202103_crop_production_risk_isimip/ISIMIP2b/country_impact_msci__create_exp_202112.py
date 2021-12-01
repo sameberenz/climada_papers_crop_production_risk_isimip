@@ -32,7 +32,7 @@ create_exp = False
 compute_impact = True
 calc_firr_noirr_impact = True
 # normalize = False   #normalize the exposure data with FAO crop production per country
-baseline = False     #generate excel sheet with exposure values per country
+baseline = True     #generate excel sheet with exposure values per country
 fill_exp_gaps = True
 
 """Set Paths"""
@@ -83,7 +83,8 @@ for file, filename in enumerate(all_haz_files):
 #initialize first hazard to assign exposures to
 haz = RelativeCropyield()
 haz.read_hdf5(os.path.join(haz_path, all_haz_files[0]))
-
+#haz.centroids.set_region_id()
+#centroids = haz.centroids
 #normalize exposures
 crop_list, countries_list, ratio_list, \
 exp_firr_norm, exp_noirr_norm, fao_cp_list, exp_tot_cp_list = normalize_several_exp(input_dir=input_exp, output_dir=output_dir)
@@ -103,14 +104,14 @@ if_cp.check()
 
 #loop over crop and climate scenario
 
-####
+"""####
 # OVERWRITE crop_list hardcode:
 list_scenarios = ['rcp60']
-crop_list = ['soy'] # TODO remove
-countries_list[0] = np.array([792]) # TODO remove
-countries_list[1] = np.array([792]) # TODO remove
-countries_list[2] = np.array([792]) # TODO remove
-countries_list[3] = np.array([792]) # TODO remove
+crop_list = ['whe'] # TODO remove
+countries_list[0] = np.array([404]) # TODO remove
+countries_list[1] = np.array([404]) # TODO remove
+countries_list[2] = np.array([404]) # TODO remove
+countries_list[3] = np.array([404]) # TODO remove
 ####"""
 exp_per_country = np.empty([len(crop_list), len(countries_list[0])])
     
@@ -148,8 +149,13 @@ if compute_impact:
         exp_noirr_everywhere.gdf['centr_RC'] = exp_firr.gdf.centr_RC
 
         if fill_exp_gaps: ## fill gaps in exposures
+
             exp_firr_everywhere.gdf.value = np.maximum.reduce([np.nan_to_num(exp_firr_everywhere.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None),np.nan_to_num(exp_noirr_everywhere.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None)])
             exp_noirr_everywhere.gdf.value = np.minimum.reduce([np.nan_to_num(exp_firr_everywhere.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None),np.nan_to_num(exp_noirr_everywhere.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None)])
+            # remove all parts where there is no exposure data in either one of the firr/noirr exposure:
+            mask_novalue = (exp_noirr.gdf.value * 0 + 1) * (exp_noirr.gdf.value * 0 + 1)
+            exp_firr_everywhere.gdf.value = exp_firr_everywhere.gdf.value * mask_novalue
+
             # exp_firr.gdf.value = np.maximum.reduce([np.nan_to_num(exp_firr.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None),np.nan_to_num(exp_noirr.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None)])
             # exp_noirr.gdf.value = np.minimum.reduce([np.nan_to_num(exp_firr.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None),np.nan_to_num(exp_noirr.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None)])
 
@@ -163,8 +169,8 @@ if compute_impact:
         exp_firr.write_hdf5(os.path.join(output_dir, 'Exposure', f'crop_production_{cropname}-firr_spamray-mirca.hdf5'))
         exp_noirr.write_hdf5(os.path.join(output_dir, 'Exposure', f'crop_production_{cropname}-noirr_spamray-mirca.hdf5'))
         exp_combi.write_hdf5(os.path.join(output_dir, 'Exposure', f'crop_production_{cropname}-combi_spamray-mirca.hdf5'))
-        exp_firr_everywhere.write_hdf5(os.path.join(output_dir, 'Exposure_new', f'crop_production_{cropname}-firr-everywhere_spamray-mirca.hdf5'))
-        exp_noirr_everywhere.write_hdf5(os.path.join(output_dir, 'Exposure_new', f'crop_production_{cropname}-noirr-everywhere_spamray-mirca.hdf5'))
+        exp_firr_everywhere.write_hdf5(os.path.join(output_dir, 'Exposure_new', f'crop_production_{cropname}-firr-everywhere_mask_spamray-mirca.hdf5'))
+        exp_noirr_everywhere.write_hdf5(os.path.join(output_dir, 'Exposure_new', f'crop_production_{cropname}-noirr-everywhere_mask_spamray-mirca.hdf5'))
 
         for _, scenario_name in enumerate(list_scenarios):
             #generate list of all full irrigation hazards
@@ -173,11 +179,12 @@ if compute_impact:
                  f.startswith('.') if '-firr_' in f if "_%s-" %(cropname) in f if scenario_name in f]
 
             for hazfile, hazfile_name in enumerate(filenames_haz):
+
                 print(hazfile_name)
                 # read full irrigation hazard
                 haz_firr = RelativeCropyield()
                 haz_firr.read_hdf5(os.path.join(haz_path, hazfile_name))
-                
+
                 # read corresponding non irrigation hazard
                 items_haz = hazfile_name.split('_')
                 haz_noirr = RelativeCropyield()
@@ -185,7 +192,8 @@ if compute_impact:
                 items_haz[3]+'_'+items_haz[4]+'_'+items_haz[5]+'_'+(items_haz[6]).split('-')[0]+ \
                 '-noirr_'+items_haz[7]
                 haz_noirr.read_hdf5(os.path.join(haz_path, filename_noirr))
-
+                #haz_firr.centroids.region_id = centroids.region_id
+                #haz_noirr.centroids.region_id = centroids.region_id
                 #calculate impact per country
                 column_names = ['Year']
                 impact_final = np.zeros([len(countries_list[crop_idx])+len(column_names), len(haz_firr.event_id)])
@@ -261,6 +269,11 @@ if compute_impact:
                     dataframe = pd.DataFrame(impact_final_noirr_everywhere.T, columns=column_names)
                     dataframe = dataframe.astype({"Year": int})
                     dataframe.to_csv(os.path.join(output_dir, 'Impact', impact_filename_noirr), index=0)
+#                if 'pepic_hadgem2-es' in hazfile_name:
+#                if 'gepic_miroc5' in hazfile_name:
+#                    raise ValueError('Hard wired break point for debugging')
+#                    
+# Exposures(exp_noirr.gdf.loc[(exp_noirr.gdf.region_id == country_name) & (exp_noirr.gdf.latitude > 30)])
 
 """Generate excel sheet containing exposure baseline"""
 if baseline:
@@ -307,7 +320,7 @@ if baseline:
     dataframe2 = pd.DataFrame(rows2, columns=['variable'])
     dataframe3 = pd.DataFrame(data, columns=column_names[1:])
     result = pd.concat([dataframe1, dataframe2, dataframe3], axis=1, sort=False)
-    result.to_csv(os.path.join(output_dir, 'baseline_exposure_irr_202110.csv'), index=0)
+    result.to_csv(os.path.join(output_dir, 'baseline_exposure_irr_202112.csv'), index=0)
 """
 if baseline:
     cp = list()
