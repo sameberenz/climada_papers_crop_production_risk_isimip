@@ -155,7 +155,7 @@ if compute_impact:
             # remove all parts where there is no exposure data in either one of the firr/noirr exposure:
             mask_novalue = (exp_noirr.gdf.value * 0 + 1) * (exp_noirr.gdf.value * 0 + 1)
             exp_firr_everywhere.gdf.value = exp_firr_everywhere.gdf.value * mask_novalue
-
+            exp_noirr_everywhere.gdf.value = exp_noirr_everywhere.gdf.value * mask_novalue
             # exp_firr.gdf.value = np.maximum.reduce([np.nan_to_num(exp_firr.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None),np.nan_to_num(exp_noirr.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None)])
             # exp_noirr.gdf.value = np.minimum.reduce([np.nan_to_num(exp_firr.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None),np.nan_to_num(exp_noirr.gdf.value, copy=True, nan=0.0, posinf=None, neginf=None)])
 
